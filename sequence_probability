@@ -1,1 +1,280 @@
+import components.simplereader.SimpleReader;
+import components.simplereader.SimpleReader1L;
+import components.simplewriter.SimpleWriter;
+import components.simplewriter.SimpleWriter1L;
+
+/**
+ * Put a short phrase describing the program here.
+ *
+ * @author A. Bete
+ *
+ */
+
+public final class SequenceProbability {
+
+    /**
+     * Private constructor so this utility class cannot be instantiated.
+     */
+    private SequenceProbability() {
+
+    }
+
+    /**
+     * Put a short phrase describing the static method myMethod here.
+     *
+     * @param codons
+     *            String of length 3 containing characters A, G, U, and/or C.
+     *
+     * @requires |codons| = 3
+     * @requires codons composed of characters A, G, U, and/or C
+     *
+     * @return character that identifies which amino acid the input corresponds
+     *         to {@code char}
+     */
+    private static char identifyCodonSet(String codons) {
+        /*
+         * Determine which amino acid the input codes for.
+         */
+        char amino;
+
+        if (codons.equals("UUU") || codons.equals("UUC")) { //Phe
+            amino = 'F';
+        } else if (codons.equals("UUA") || codons.equals("UUG")
+                || codons.equals("CUU") || codons.equals("CUC")
+                || codons.equals("CUA") || codons.equals("CUG")) { //Leu
+            amino = 'L';
+        } else if (codons.equals("AUU") || codons.equals("AUC")
+                || codons.equals("AUA")) { //Ile
+            amino = 'I';
+        } else if (codons.equals("AUG")) { //Met
+            amino = 'M';
+        } else if (codons.equals("GUU") || codons.equals("GUC")
+                || codons.equals("GUA") || codons.equals("GUG")) { //Val
+            amino = 'V';
+        } else if (codons.equals("UCU") || codons.equals("UCC")
+                || codons.equals("UCA") || codons.equals("UCG")
+                || codons.equals("AGU") || codons.equals("AGC")) { //Ser
+            amino = 'S';
+        } else if (codons.equals("CCU") || codons.equals("CCC")
+                || codons.equals("CCA") || codons.equals("CCG")) { //Pro
+            amino = 'P';
+        } else if (codons.equals("ACU") || codons.equals("ACC")
+                || codons.equals("ACA") || codons.equals("ACG")) { //Thr
+            amino = 'T';
+        } else if (codons.equals("GCU") || codons.equals("GCC")
+                || codons.equals("GCA") || codons.equals("GCG")) { //Ala
+            amino = 'A';
+        } else if (codons.equals("UAU") || codons.equals("UAC")) { //Tyr
+            amino = 'Y';
+        } else if (codons.equals("UAA") || codons.equals("UAG")
+                || codons.contentEquals("UGA")) { //STOP
+            amino = 'X';
+        } else if (codons.equals("CAU") || codons.equals("CAC")) { //His
+            amino = 'H';
+        } else if (codons.equals("CAA") || codons.equals("CAG")) { //Gln
+            amino = 'Q';
+        } else if (codons.equals("AAU") || codons.equals("AAC")) { //Asn
+            amino = 'N';
+        } else if (codons.equals("AAA") || codons.equals("AAG")) { //Lys
+            amino = 'K';
+        } else if (codons.equals("GAU") || codons.equals("GAC")) { //Asp
+            amino = 'D';
+        } else if (codons.equals("GAU") || codons.equals("GAC")) { //Glu
+            amino = 'E';
+        } else if (codons.equals("UGU") || codons.equals("UGC")) { //Cys
+            amino = 'C';
+        } else if (codons.equals("UGG")) { //Trp
+            amino = 'W';
+        } else if (codons.equals("CGU") || codons.equals("CGC")
+                || codons.equals("CGA") || codons.equals("CGG")
+                || codons.equals("AGA") || codons.equals("AGG")) { //Arg
+            amino = 'R';
+        } else if (codons.equals("GGU") || codons.equals("GGC")
+                || codons.equals("GGA") || codons.equals("GGG")) { //Gly
+            amino = 'G';
+        } else {
+            amino = 'Z';
+        }
+
+        return amino;
+    }
+
+    /**
+     * Outputs set of three codons (beginning at start) given the String
+     * sequence.
+     *
+     * @param sequence
+     *            sequence of codons to extract 3 codons from
+     *
+     * @param start
+     *            place in sequence to begin extraction
+     *
+     * @return amino acid sequence (three codons) {@code codonSet}
+     *
+     */
+    private static String getCodonSet(String sequence, int start) {
+        /*
+         * Put your code for myMethod here
+         */
+
+        StringBuilder codonSet = new StringBuilder("");
+        final int tHREE = 3;
+        for (int i = start; i < start + tHREE; i++) {
+            char codon = sequence.charAt(i);
+            codonSet.append(codon);
+        }
+
+        return codonSet.toString();
+
+    }
+
+    /**
+     * Outputs set of three codons (beginning at start) given the String
+     * sequence.
+     *
+     * @param sequence
+     *            sequence of codons to extract 3 codons from
+     *
+     * @param start
+     *            place in sequence to begin extraction
+     *
+     * @return amino acid sequence (three codons) {@code codonSet}
+     *
+     */
+    private static String dnaToRNA(String sequence) {
+        /*
+         * Turn sequence from DNA to RNA.
+         */
+        StringBuilder dna = new StringBuilder(sequence);
+        StringBuilder rna = new StringBuilder("");
+        int length = sequence.length();
+
+        for (int i = 0; i < length; i++) {
+            // get character
+            char dnaCodon = sequence.charAt(i);
+
+            //determine which RNA codon it corresponds to
+            char rnaCodon;
+            if (dnaCodon == 'T') {
+                rnaCodon = 'U';
+            } else {
+                rnaCodon = dnaCodon;
+            }
+
+            //add to RNA sequence
+            rna.append(rnaCodon);
+        }
+
+        // return RNA sequence
+        return rna.toString();
+
+    }
+
+    /**
+     * Outputs set of three codons (beginning at start) given the String
+     * sequence.
+     *
+     * @param codonSet
+     *            sequence of codons to determine probability of
+     *
+     * @return probability of codons in codon set mutating {@code probability}
+     *
+     */
+    private static float codonSetProbability(String codonSet) {
+
+        float probability = 1;
+
+        //TODO this
+
+        return probability;
+
+    }
+
+    /**
+     * Outputs set of three codons (beginning at start) given the String
+     * sequence.
+     *
+     * @param dna
+     *            DNA sequence to process
+     *
+     * @return probability {@code probability}
+     *
+     */
+    private static float[] processSeqence(String dna) {
+
+        // set up array to hold all the probability for each amino acid
+        int length = dna.length();
+        final int tHREE = 3;
+        float[] probabilities = new float[length / tHREE];
+
+        // turn sequence from DNA to RNA.
+        String rna = dnaToRNA(dna);
+
+        // determine probability for each amino acid
+        int y = 0;
+        for (int i = 0; i < length; i += tHREE) {
+
+            // get codon set
+            String codonSet = getCodonSet(rna, i);
+
+            //determine probability for codon set
+            probabilities[y] = codonSetProbability(codonSet);
+            y++;
+
+        }
+
+        return probabilities;
+
+    }
+
+    /**
+     * Outputs set of three codons (beginning at start) given the String
+     * sequence.
+     *
+     * @param dna
+     *            DNA sequence to process
+     * @requires probabilites.length > 0
+     *
+     * @return probability {@code probability}
+     *
+     */
+    private static float combinedProbability(float[] probabilities) {
+
+        float probability = 0;
+        int length = probabilities.length;
+
+        for (int i = 0; i < length; i++) {
+            probability += probabilities[i];
+        }
+        return probability / length;
+
+    }
+
+    /**
+     * Main method.
+     *
+     * @param args
+     *            the command line arguments
+     */
+    public static void main(String[] args) {
+        SimpleReader in = new SimpleReader1L();
+        SimpleWriter out = new SimpleWriter1L();
+        /*
+         * Put your main program code here; it may call myMethod as shown
+         */
+        out.println("Please enter sequence");
+        String sequence = in.nextLine();
+        float[] probabilities = processSeqence(sequence);
+        for (int i = 0; i < probabilities.length; i++) {
+            out.println(probabilities[i]);
+        }
+        out.println("Total:" + combinedProbability(probabilities));
+        /*
+         * Close input and output streams
+         */
+        in.close();
+        out.close();
+    }
+
+}
 
