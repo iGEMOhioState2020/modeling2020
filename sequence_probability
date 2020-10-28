@@ -4,7 +4,8 @@ import components.simplewriter.SimpleWriter;
 import components.simplewriter.SimpleWriter1L;
 
 /**
- * Put a short phrase describing the program here.
+ * Program to model the likeliness of a single codon mutation changing the amino
+ * acid expressed.
  *
  * @author A. Bete
  *
@@ -119,7 +120,8 @@ public final class SequenceProbability {
 
         StringBuilder codonSet = new StringBuilder("");
         final int tHREE = 3;
-        for (int i = start; i < start + tHREE; i++) {
+        for (int i = start; (i < start + tHREE)
+                && (i < sequence.length()); i++) {
             char codon = sequence.charAt(i);
             codonSet.append(codon);
         }
@@ -129,23 +131,18 @@ public final class SequenceProbability {
     }
 
     /**
-     * Outputs set of three codons (beginning at start) given the String
-     * sequence.
+     * Outputs RNA sequence given a DNA sequence.
      *
      * @param sequence
-     *            sequence of codons to extract 3 codons from
+     *            DNA sequence
      *
-     * @param start
-     *            place in sequence to begin extraction
-     *
-     * @return amino acid sequence (three codons) {@code codonSet}
+     * @return RNA sequence {@code rna}
      *
      */
     private static String dnaToRNA(String sequence) {
         /*
          * Turn sequence from DNA to RNA.
          */
-        StringBuilder dna = new StringBuilder(sequence);
         StringBuilder rna = new StringBuilder("");
         int length = sequence.length();
 
@@ -171,8 +168,7 @@ public final class SequenceProbability {
     }
 
     /**
-     * Outputs set of three codons (beginning at start) given the String
-     * sequence.
+     * Outputs probability of three codons mutating to a different amino acid.
      *
      * @param codonSet
      *            sequence of codons to determine probability of
@@ -182,22 +178,63 @@ public final class SequenceProbability {
      */
     private static float codonSetProbability(String codonSet) {
 
-        float probability = 1;
+        char realAminoAcid = identifyCodonSet(codonSet);
+        float total = 0;
+        float badMutations = 0;
 
-        //TODO this
+        // count the number of changed nucleotides for each mutation
+        String[] allCodons = { "UUU", "UUC", "UUA", "UUG", "CUU", "CUC", "CUA",
+                "CUG", "AUU", "AUC", "AUA", "AUG", "GUU", "GUC", "GUA", "GUG",
+                "UCU", "UCC", "UCA", "UCG", "AGU", "AGC", "CCU", "CCC", "CCA",
+                "CCG", "ACU", "ACC", "ACA", "ACG", "GCU", "GCC", "GCA", "GCG",
+                "UAU", "UAC", "UAA", "UAG", "UGA", "CAU", "CAC", "CAA", "CAG",
+                "AAU", "AAC", "AAA", "AAG", "GAU", "GAC", "GAU", "GAC", "UGU",
+                "UGC", "UGG", "CGU", "CGC", "CGA", "CGG", "AGA", "AGG", "GGU",
+                "GGC", "GGA", "GGG" };
+        int length = allCodons.length;
+        for (int i = 0; i < length; i++) {
 
+            // get amino acid
+            char firstCharAll = allCodons[i].charAt(0);
+            char firstCharReal = codonSet.charAt(0);
+            char secondCharAll = allCodons[i].charAt(1);
+            char secondCharReal = codonSet.charAt(1);
+            char thirdCharAll = allCodons[i].charAt(2);
+            char thirdCharReal = codonSet.charAt(2);
+
+            if (((firstCharAll != firstCharReal)
+                    && (secondCharAll == secondCharReal)
+                    && (thirdCharAll == thirdCharReal))
+                    || ((firstCharAll == firstCharReal)
+                            && (secondCharAll != secondCharReal)
+                            && (thirdCharAll == thirdCharReal))
+                    || ((firstCharAll == firstCharReal)
+                            && (secondCharAll == secondCharReal)
+                            && (thirdCharAll != thirdCharReal))) {
+                char changedAminoAcid = identifyCodonSet(allCodons[i]);
+
+                // update counts
+                total++;
+                if (changedAminoAcid != realAminoAcid) {
+                    badMutations++;
+                }
+
+            }
+        }
+
+        float probability = badMutations / total;
         return probability;
 
     }
 
     /**
-     * Outputs set of three codons (beginning at start) given the String
-     * sequence.
+     * Outputs array of probabilities that corresponds to each amino acid in
+     * {@code dna} sequence.
      *
      * @param dna
      *            DNA sequence to process
      *
-     * @return probability {@code probability}
+     * @return probability array {@code probabilities}
      *
      */
     private static float[] processSeqence(String dna) {
@@ -228,11 +265,10 @@ public final class SequenceProbability {
     }
 
     /**
-     * Outputs set of three codons (beginning at start) given the String
-     * sequence.
+     * Averages probabilities for all amino acids in the sequence.
      *
-     * @param dna
-     *            DNA sequence to process
+     * @param probabilities
+     *            amino acid probabilities
      * @requires probabilites.length > 0
      *
      * @return probability {@code probability}
@@ -248,6 +284,28 @@ public final class SequenceProbability {
         }
         return probability / length;
 
+    }
+
+    /**
+     * Places a comma between every third codon.
+     *
+     * @param sequence
+     *
+     * @return sequence with commas {@code modifiedSequence}
+     *
+     */
+    private static String sequenceWithCommas(String sequence) {
+        final int tHREE = 3;
+        int length = sequence.length();
+        StringBuilder modifiedSequence = new StringBuilder("");
+        for (int i = 0; i < length; i += tHREE) {
+
+            modifiedSequence.append(getCodonSet(sequence, i));
+            modifiedSequence.append(",");
+
+        }
+
+        return modifiedSequence.toString();
     }
 
     /**
@@ -269,6 +327,7 @@ public final class SequenceProbability {
             out.println(probabilities[i]);
         }
         out.println("Total:" + combinedProbability(probabilities));
+        out.println(sequenceWithCommas(sequence));
         /*
          * Close input and output streams
          */
@@ -277,4 +336,3 @@ public final class SequenceProbability {
     }
 
 }
-
