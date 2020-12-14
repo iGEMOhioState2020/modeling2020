@@ -1,7 +1,6 @@
-import components.simplereader.SimpleReader;
-import components.simplereader.SimpleReader1L;
-import components.simplewriter.SimpleWriter;
-import components.simplewriter.SimpleWriter1L;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * Program to model the likeliness of a single codon mutation changing the amino
@@ -11,17 +10,17 @@ import components.simplewriter.SimpleWriter1L;
  *
  */
 
-public final class SequenceProbability {
+public final class SequenceProbabilityJFC {
 
     /**
      * Private constructor so this utility class cannot be instantiated.
      */
-    private SequenceProbability() {
+    private SequenceProbabilityJFC() {
 
     }
 
     /**
-     * Put a short phrase describing the static method myMethod here.
+     * Identifies which amino acid the inputed codon codes for.
      *
      * @param codons
      *            String of length 3 containing characters A, G, U, and/or C.
@@ -315,24 +314,57 @@ public final class SequenceProbability {
      *            the command line arguments
      */
     public static void main(String[] args) {
-        SimpleReader in = new SimpleReader1L();
-        SimpleWriter out = new SimpleWriter1L();
+
         /*
-         * Put your main program code here; it may call myMethod as shown
+         * Open input
          */
-        out.println("Please enter sequence");
-        String sequence = in.nextLine();
-        float[] probabilities = processSeqence(sequence);
-        for (int i = 0; i < probabilities.length; i++) {
-            out.println(probabilities[i]);
+        BufferedReader input;
+        input = new BufferedReader(new InputStreamReader(System.in));
+
+        /*
+         * Get input from user
+         */
+        System.out.println("Please enter sequence");
+
+        String sequence;
+        try {
+            sequence = input.readLine();
+        } catch (IOException e) {
+            System.err.println("Error reading input.");
+            return;
         }
-        out.println("Total:" + combinedProbability(probabilities));
-        out.println(sequenceWithCommas(sequence));
+
+        /*
+         * Ensure input isn't null
+         */
+        if (sequence == null) {
+            return;
+        }
+
+        /*
+         * Create array with processed input
+         */
+        float[] probabilities = processSeqence(sequence);
+
+        /*
+         * Print output
+         */
+        for (int i = 0; i < probabilities.length; i++) {
+            System.out.println(probabilities[i]);
+        }
+        System.out.println("Total:" + combinedProbability(probabilities));
+        System.out.println(sequenceWithCommas(sequence));
+
         /*
          * Close input and output streams
          */
-        in.close();
-        out.close();
+        System.out.close();
+
+        try {
+            input.close();
+        } catch (IOException e) {
+            System.err.println("Error closing input stream.");
+        }
     }
 
 }
