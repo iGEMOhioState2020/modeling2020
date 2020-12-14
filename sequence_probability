@@ -113,9 +113,6 @@ public final class SequenceProbabilityJFC {
      *
      */
     private static String getCodonSet(String sequence, int start) {
-        /*
-         * Put your code for myMethod here
-         */
 
         StringBuilder codonSet = new StringBuilder("");
         final int tHREE = 3;
